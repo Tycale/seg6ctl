@@ -348,7 +348,8 @@ void nlmem_recv_loop(struct nlmem_sock *sk, struct nlmem_cb *ucb)
                 }
                 nlh = (struct nlmsghdr *)buf;
             } else { // unused or skip
-                stat_skip ++;
+                if(hdr->nm_status == NL_MMAP_STATUS_SKIP)
+                    stat_skip ++;
                 advance_rx_frame(sk);
                 continue;
             }
