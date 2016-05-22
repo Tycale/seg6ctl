@@ -7,6 +7,14 @@
 #define SOL_NETLINK 270
 #endif
 
+
+extern int stat_copy_0;
+extern int stat_valid_0;
+extern int stat_valid;
+extern int stat_skip;
+extern int stat_copy;
+
+
 #define NLMEM_CB_VALID      0
 #define NLMEM_CB_ACK        1
 #define NLMEM_CB_ERR        2

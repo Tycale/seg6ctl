@@ -16,6 +16,13 @@
 #include <sys/mman.h>
 #include "nlmem.h"
 
+
+int stat_valid_0 = 0;
+int stat_valid = 0;
+int stat_skip = 0;
+int stat_copy = 0;
+int stat_copy_0 = 0;
+
 /*
  *  Socket handling
  */
@@ -326,15 +333,22 @@ void nlmem_recv_loop(struct nlmem_sock *sk, struct nlmem_cb *ucb)
             if (hdr->nm_status == NL_MMAP_STATUS_VALID) {
                 nlh = (void *)hdr + NL_MMAP_HDRLEN;
                 len = hdr->nm_len;
+                stat_valid ++;
 
-                if (len == 0)
+                if (len == 0){
+                    stat_valid_0 ++;
                     goto release;
+                }
             } else if (hdr->nm_status == NL_MMAP_STATUS_COPY) {
+                stat_copy ++;
                 len = recv(sk->fd, buf, sk->frame_size, MSG_DONTWAIT);
-                if (len <= 0)
+                if (len <= 0) {
+                    stat_copy_0 ++;
                     break;
+                }
                 nlh = (struct nlmsghdr *)buf;
             } else { // unused or skip
+                stat_skip ++;
                 advance_rx_frame(sk);
                 continue;
             }
