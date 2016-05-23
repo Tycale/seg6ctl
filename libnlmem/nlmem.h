@@ -8,6 +8,7 @@
 #endif
 
 
+extern int stat_else;
 extern int stat_copy_0;
 extern int stat_valid_0;
 extern int stat_valid;

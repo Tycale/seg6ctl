@@ -22,6 +22,7 @@ int stat_valid = 0;
 int stat_skip = 0;
 int stat_copy = 0;
 int stat_copy_0 = 0;
+int stat_else = 0;
 
 /*
  *  Socket handling
@@ -350,6 +351,7 @@ void nlmem_recv_loop(struct nlmem_sock *sk, struct nlmem_cb *ucb)
             } else { // unused or skip
                 if(hdr->nm_status == NL_MMAP_STATUS_SKIP)
                     stat_skip ++;
+                stat_else ++;
                 advance_rx_frame(sk);
                 continue;
             }
