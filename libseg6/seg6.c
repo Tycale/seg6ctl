@@ -146,7 +146,7 @@ static int nl_recv_cb_delayed(struct nlmem_sock *nlm_sk __unused, struct nlmsghd
 static int nl_recv_err(struct nlmem_sock *nlm_sk __unused, struct nlmsghdr *nlh, void *arg)
 {
     int *error = arg;
-    struct nlmsgerr *err = nlmsg_data(hdr);
+    struct nlmsgerr *err = nlmsg_data(nlh);
     struct nl_mmap_hdr *hdr;
     hdr = ((void *)nlh - NL_MMAP_HDRLEN);
 
