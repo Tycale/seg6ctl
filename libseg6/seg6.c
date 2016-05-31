@@ -151,7 +151,9 @@ static int nl_recv_err(struct nlmem_sock *nlm_sk __unused, struct nlmsghdr *hdr,
     *error = err->error;
     printf("NL_ERROR\n");
 
-    return NL_STOP;
+    hdr->nm_status = NL_MMAP_STATUS_UNUSED;
+
+    return NL_SKIP;
 }
 
 static int nl_recv_ack(struct nlmem_sock *nlm_sk __unused, struct nlmsghdr *hdr __unused, void *arg)
