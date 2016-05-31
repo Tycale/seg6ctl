@@ -149,6 +149,7 @@ static int nl_recv_err(struct nlmem_sock *nlm_sk __unused, struct nlmsghdr *hdr,
     struct nlmsgerr *err = nlmsg_data(hdr);
 
     *error = err->error;
+    printf("NL_ERROR\n");
 
     return NL_STOP;
 }
@@ -158,12 +159,14 @@ static int nl_recv_ack(struct nlmem_sock *nlm_sk __unused, struct nlmsghdr *hdr 
     int *error = arg;
 
     *error = 0;
+    printf("NL_ACK\n");
 
     return NL_STOP;
 }
 
 static int nl_recv_invalid(struct nlmem_sock *nlm_sk __unused, struct nlmsghdr *hdr __unused, void *arg __unused)
 {
+    printf("NL_INVALID\n");
     return NL_STOP;
 }
 

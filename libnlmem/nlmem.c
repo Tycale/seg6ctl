@@ -365,20 +365,20 @@ void nlmem_recv_loop(struct nlmem_sock *sk, struct nlmem_cb *ucb)
                     if (nlh->nlmsg_len < (unsigned)nlmsg_size(sizeof(*e))) {
                         //printf("bbb\n");
                         if (cb->cb_set[NLMEM_CB_INVALID]) {
-                        //printf("ccc\n");
+                            printf("ccc\n");
                             NLMEM_CB_CALL(cb, NLMEM_CB_INVALID, sk, nlh);
                         }
                     } else if (e->error) {
-                        //printf("ddd\n");
+                        printf("eee\n");
                         if (cb->cb_set[NLMEM_CB_ERR]) {
-                        //printf("eeee\n");
+                            printf("error\n");
                             NLMEM_CB_CALL(cb, NLMEM_CB_ERR, sk, nlh);
                         } else {
-                        //printf("rrrr\n");
+                        printf("grr\n");
                             goto stop;
                         }
                     } else if (cb->cb_set[NLMEM_CB_ACK]) {
-                        //printf("tttt\n");
+                        printf("ack\n");
                         NLMEM_CB_CALL(cb, NLMEM_CB_ACK, sk, nlh);
                     }
                 } else {
