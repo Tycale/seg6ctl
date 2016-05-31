@@ -301,7 +301,7 @@ void nlmem_recv_loop(struct nlmem_sock *sk, struct nlmem_cb *ucb)
     cb = ucb ?: &sk->cb;
 
     for (;;) {
-        //printf("lolo\n");
+        printf("big\n");
         struct pollfd pfds[1];
 
         pfds[0].fd = sk->fd;
@@ -329,26 +329,32 @@ void nlmem_recv_loop(struct nlmem_sock *sk, struct nlmem_cb *ucb)
         }
 
         for (;;) {
+            printf("small\n");
             hdr = current_rx_frame(sk);
 
             if (hdr->nm_status == NL_MMAP_STATUS_VALID) {
+                printf("popo\n");
                 nlh = (void *)hdr + NL_MMAP_HDRLEN;
                 len = hdr->nm_len;
                 stat_valid ++;
 
                 if (len == 0){
+                    printf("lolo\n");
                     stat_valid_0 ++;
                     goto release;
                 }
             } else if (hdr->nm_status == NL_MMAP_STATUS_COPY) {
+                printf("momo\n");
                 stat_copy ++;
                 len = recv(sk->fd, buf, sk->frame_size, MSG_DONTWAIT);
                 if (len <= 0) {
+                    printf("coco\n");
                     stat_copy_0 ++;
                     break;
                 }
                 nlh = (struct nlmsghdr *)buf;
             } else { // unused or skip
+                printf("roro\n");
                 if(hdr->nm_status == NL_MMAP_STATUS_SKIP)
                     stat_skip ++;
                 stat_else ++;
@@ -357,24 +363,34 @@ void nlmem_recv_loop(struct nlmem_sock *sk, struct nlmem_cb *ucb)
             }
 
             while (nlmsg_ok(nlh, len)) {
+                printf("eoeo\n");
                 if (nlh->nlmsg_type == NLMSG_ERROR) {
+                    printf("aaa\n");
                     struct nlmsgerr *e = nlmsg_data(nlh);
 
                     if (nlh->nlmsg_len < (unsigned)nlmsg_size(sizeof(*e))) {
+                        printf("bbb\n");
                         if (cb->cb_set[NLMEM_CB_INVALID]) {
+                        printf("ccc\n");
                             NLMEM_CB_CALL(cb, NLMEM_CB_INVALID, sk, nlh);
                         }
                     } else if (e->error) {
+                        printf("ddd\n");
                         if (cb->cb_set[NLMEM_CB_ERR]) {
+                        printf("eeee\n");
                             NLMEM_CB_CALL(cb, NLMEM_CB_ERR, sk, nlh);
                         } else {
+                        printf("rrrr\n");
                             goto stop;
                         }
                     } else if (cb->cb_set[NLMEM_CB_ACK]) {
+                        printf("tttt\n");
                         NLMEM_CB_CALL(cb, NLMEM_CB_ACK, sk, nlh);
                     }
                 } else {
+                        printf("zzzz\n");
                     if (cb->cb_set[NLMEM_CB_VALID]) {
+                        printf("pq?\n");
                             if (sk->delayed_release)
                                 hdr->nm_status = NL_MMAP_STATUS_SKIP;
                         NLMEM_CB_CALL(cb, NLMEM_CB_VALID, sk, nlh);
@@ -382,10 +398,12 @@ void nlmem_recv_loop(struct nlmem_sock *sk, struct nlmem_cb *ucb)
                 }
 
 skip:
+                printf("skip\n");
                 nlh = nlmsg_next(nlh, &len);
             }
 
 release:
+                printf("release\n");
             if (!sk->delayed_release)
                 hdr->nm_status = NL_MMAP_STATUS_UNUSED;
 
@@ -401,6 +419,7 @@ release:
  * before frame release in order to have a valid in-use frame
  */
 stop:
+    printf("stop\n");
     hdr->nm_status = NL_MMAP_STATUS_UNUSED;
     advance_rx_frame(sk);
     free(buf);
