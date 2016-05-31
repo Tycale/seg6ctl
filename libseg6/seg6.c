@@ -143,17 +143,19 @@ static int nl_recv_cb_delayed(struct nlmem_sock *nlm_sk __unused, struct nlmsghd
     return NL_SKIP;
 }
 
-static int nl_recv_err(struct nlmem_sock *nlm_sk __unused, struct nlmsghdr *hdr, void *arg)
+static int nl_recv_err(struct nlmem_sock *nlm_sk __unused, struct nlmsghdr *nlh, void *arg)
 {
     int *error = arg;
     struct nlmsgerr *err = nlmsg_data(hdr);
+    struct nl_mmap_hdr *hdr;
+    hdr = ((void *)nlh - NL_MMAP_HDRLEN);
 
     *error = err->error;
     printf("NL_ERROR\n");
 
     hdr->nm_status = NL_MMAP_STATUS_UNUSED;
 
-    return NL_SKIP;
+    return NL_OK;
 }
 
 static int nl_recv_ack(struct nlmem_sock *nlm_sk __unused, struct nlmsghdr *hdr __unused, void *arg)
