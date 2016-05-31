@@ -309,13 +309,11 @@ void nlmem_recv_loop(struct nlmem_sock *sk, struct nlmem_cb *ucb)
         pfds[0].revents = 0;
 
         if (poll(pfds, 1, -1) < 0 && errno != EINTR) {
-            printf("hihi\n");
             perror("poll");
             break;
         }
 
         if (pfds[0].revents & POLLERR) {
-            printf("hehe\n");
             int error = 0;
             socklen_t errlen = sizeof(error);
             getsockopt(sk->fd, SOL_SOCKET, SO_ERROR, (void *)&error, &errlen);
@@ -329,17 +327,15 @@ void nlmem_recv_loop(struct nlmem_sock *sk, struct nlmem_cb *ucb)
         }
 
         for (;;) {
-            printf("small\n");
             hdr = current_rx_frame(sk);
 
             if (hdr->nm_status == NL_MMAP_STATUS_VALID) {
-                printf("popo\n");
                 nlh = (void *)hdr + NL_MMAP_HDRLEN;
                 len = hdr->nm_len;
                 stat_valid ++;
 
                 if (len == 0){
-                    printf("lolo\n");
+                    printf("dodo\n");
                     stat_valid_0 ++;
                     goto release;
                 }
@@ -363,7 +359,6 @@ void nlmem_recv_loop(struct nlmem_sock *sk, struct nlmem_cb *ucb)
             }
 
             while (nlmsg_ok(nlh, len)) {
-                printf("eoeo\n");
                 if (nlh->nlmsg_type == NLMSG_ERROR) {
                     printf("aaa\n");
                     struct nlmsgerr *e = nlmsg_data(nlh);
@@ -388,9 +383,7 @@ void nlmem_recv_loop(struct nlmem_sock *sk, struct nlmem_cb *ucb)
                         NLMEM_CB_CALL(cb, NLMEM_CB_ACK, sk, nlh);
                     }
                 } else {
-                        printf("zzzz\n");
                     if (cb->cb_set[NLMEM_CB_VALID]) {
-                        printf("pq?\n");
                             if (sk->delayed_release)
                                 hdr->nm_status = NL_MMAP_STATUS_SKIP;
                         NLMEM_CB_CALL(cb, NLMEM_CB_VALID, sk, nlh);
@@ -398,18 +391,18 @@ void nlmem_recv_loop(struct nlmem_sock *sk, struct nlmem_cb *ucb)
                 }
 
 skip:
-                printf("skip\n");
                 nlh = nlmsg_next(nlh, &len);
             }
 
 release:
-                printf("release\n");
             if (!sk->delayed_release)
                 hdr->nm_status = NL_MMAP_STATUS_UNUSED;
 
             advance_rx_frame(sk);
         }
     }
+
+    printf("free\n");
 
     free(buf);
     return;
