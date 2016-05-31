@@ -301,7 +301,7 @@ void nlmem_recv_loop(struct nlmem_sock *sk, struct nlmem_cb *ucb)
     cb = ucb ?: &sk->cb;
 
     for (;;) {
-        printf("big\n");
+        //printf("big\n");
         struct pollfd pfds[1];
 
         pfds[0].fd = sk->fd;
@@ -322,7 +322,7 @@ void nlmem_recv_loop(struct nlmem_sock *sk, struct nlmem_cb *ucb)
         }
 
         if (!(pfds[0].revents & POLLIN)) {
-            printf("haha\n");
+            //printf("haha\n");
             continue;
         }
 
@@ -335,16 +335,16 @@ void nlmem_recv_loop(struct nlmem_sock *sk, struct nlmem_cb *ucb)
                 stat_valid ++;
 
                 if (len == 0){
-                    printf("dodo\n");
+                    //printf("dodo\n");
                     stat_valid_0 ++;
                     goto release;
                 }
             } else if (hdr->nm_status == NL_MMAP_STATUS_COPY) {
-                printf("momo\n");
+                //printf("momo\n");
                 stat_copy ++;
                 len = recv(sk->fd, buf, sk->frame_size, MSG_DONTWAIT);
                 if (len <= 0) {
-                    printf("coco\n");
+                    //printf("coco\n");
                     stat_copy_0 ++;
                     break;
                 }
@@ -359,26 +359,26 @@ void nlmem_recv_loop(struct nlmem_sock *sk, struct nlmem_cb *ucb)
 
             while (nlmsg_ok(nlh, len)) {
                 if (nlh->nlmsg_type == NLMSG_ERROR) {
-                    printf("aaa\n");
+                    //printf("aaa\n");
                     struct nlmsgerr *e = nlmsg_data(nlh);
 
                     if (nlh->nlmsg_len < (unsigned)nlmsg_size(sizeof(*e))) {
-                        printf("bbb\n");
+                        //printf("bbb\n");
                         if (cb->cb_set[NLMEM_CB_INVALID]) {
-                        printf("ccc\n");
+                        //printf("ccc\n");
                             NLMEM_CB_CALL(cb, NLMEM_CB_INVALID, sk, nlh);
                         }
                     } else if (e->error) {
-                        printf("ddd\n");
+                        //printf("ddd\n");
                         if (cb->cb_set[NLMEM_CB_ERR]) {
-                        printf("eeee\n");
+                        //printf("eeee\n");
                             NLMEM_CB_CALL(cb, NLMEM_CB_ERR, sk, nlh);
                         } else {
-                        printf("rrrr\n");
+                        //printf("rrrr\n");
                             goto stop;
                         }
                     } else if (cb->cb_set[NLMEM_CB_ACK]) {
-                        printf("tttt\n");
+                        //printf("tttt\n");
                         NLMEM_CB_CALL(cb, NLMEM_CB_ACK, sk, nlh);
                     }
                 } else {
@@ -401,7 +401,7 @@ release:
         }
     }
 
-    printf("free\n");
+    //printf("free\n");
 
     free(buf);
     return;
@@ -411,7 +411,7 @@ release:
  * before frame release in order to have a valid in-use frame
  */
 stop:
-    printf("stop\n");
+    //printf("stop\n");
     hdr->nm_status = NL_MMAP_STATUS_UNUSED;
     advance_rx_frame(sk);
     free(buf);
