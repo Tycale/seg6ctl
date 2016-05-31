@@ -150,8 +150,10 @@ static int nl_recv_err(struct nlmem_sock *nlm_sk __unused, struct nlmsghdr *nlh,
     struct nl_mmap_hdr *hdr;
     hdr = ((void *)nlh - NL_MMAP_HDRLEN);
 
+    struct nlmsgerr *e = nlmsg_data(nlh);
+
     *error = err->error;
-    printf("NL_ERROR\n");
+    printf("NL_ERROR,  nlh: %d error:%d\n", *error, e->error );
 
     hdr->nm_status = NL_MMAP_STATUS_UNUSED;
 
