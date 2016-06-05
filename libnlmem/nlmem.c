@@ -157,6 +157,11 @@ struct nlmem_sock *nlmem_sock_create(struct nl_mmap_req *req, const char *family
         goto err_close;
     }
 
+    if ((sk->lock = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t))) == NULL ) {
+        fprintf(stderr,"malloc lock failed\n");
+        goto err_close;
+    }
+
     if (pthread_mutex_init(sk->lock, NULL) != 0) {
         fprintf(stderr,"lock init failed\n");
         goto err_close;
