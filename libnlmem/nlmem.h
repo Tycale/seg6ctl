@@ -44,6 +44,7 @@ struct nlmem_sock {
     unsigned int rx_frame_offset;
 
     int delayed_release;
+    pthread_mutex_t *lock;
 
     struct nlmem_cb cb;
 };

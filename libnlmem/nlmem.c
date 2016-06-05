@@ -15,6 +15,7 @@
 #include <netlink/genl/ctrl.h>
 #include <sys/mman.h>
 #include "nlmem.h"
+#include <pthread.h>
 
 
 int stat_valid_0 = 0;
@@ -155,6 +156,12 @@ struct nlmem_sock *nlmem_sock_create(struct nl_mmap_req *req, const char *family
         perror("mmap");
         goto err_close;
     }
+
+    if (pthread_mutex_init(sk->lock, NULL) != 0) {
+        fprintf(stderr,"lock init failed\n");
+        goto err_close;
+    }
+
 
     tx_ring = rx_ring + ring_size;
 
@@ -365,7 +372,7 @@ void nlmem_recv_loop(struct nlmem_sock *sk, struct nlmem_cb *ucb)
                     if (nlh->nlmsg_len < (unsigned)nlmsg_size(sizeof(*e))) {
                         //printf("bbb\n");
                         if (cb->cb_set[NLMEM_CB_INVALID]) {
-                            printf("ccc\n");
+                        printf("ccc\n");
                             NLMEM_CB_CALL(cb, NLMEM_CB_INVALID, sk, nlh);
                         }
                     } else if (e->error) {
